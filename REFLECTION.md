@@ -1,14 +1,17 @@
-Choices made not explicitly specified:
+# REFLECTIONS.md
+
+## Q1: Who are your users, and what changes for them? 
+```
+There are two main users of GEEK AI marketplace - it reduces time for both the buyer and seller to surf the web for best options.
+One is the enterprise seller who has created an agentic AI workflow and would like to sell the solution for a fee.
+Two is the enterprise buyer who wishes to adopt a workflow but does not have a solution and requires one.
+```
+ 
+## Q2: Augmented capacity and constrained capacity
+```
+I had a working AI concierge and a marketplace that was built within ten minutes. Without a technical background I could not have deployed a chatbot, much less a smart concierge that could guide my users to the right marketplace.
+AI studio created an annual subscription discount that I was unable to remove on my own.
+It also created a ratings and review model of each enterprise seller that I did not ask for.
 Selected a dark enterprise layout utilizing slate-900 along with emerald-500 highlights to enhance mobile readability when viewed at arm length
-Implemented persistent state variables stored locally for Card Detail View (detailed or compact) alongside Payment Period (Monthly or Annual with 15% discount) to retain user preferences without backend persistence
-Included a device layout view switcher allowing seamless testing on desktop screens or mobile interfaces
+After clarifying role, AI concierge could not offer the correct solutions that I was presumptively looking for. 
 
-Things that got added AI concierge gave better clarity to the chatbot
-Included some examples like 
-Autonomous workflow software
-Edge AI hardware appliance
-Compliance & risk agent
-Customer support and sales agent
-
-Issues: Told concierge what I am looking for - competitors’ pricing.
-After clarifying my role, concierge offered other agentic AI solutions that I am not looking for
