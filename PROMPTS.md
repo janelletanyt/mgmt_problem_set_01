@@ -1,3 +1,12 @@
+# PROMPTS.md - [GEEK AI]
+**Student:** [Janelle Tan] **Course:** MGMT 6110 **Problem Set 1**
+**User sentence** An enterprise seller or buyer opens this screen to list his agentic AI solution, and knows it worked when the AI concierge leads him to the marketplace. 
+**Live link** mgmt-problem-set-01.vercel.app
+
+--
+
+## Prompt 1 - The master prompt
+```
 ROLE: You are a senior front-end developer building a React web app.
 
 GOAL: Build the front end of [GEEK AI] on the phone, an online marketplace for potential businesses who wants to use agentic AI in their workflow. They can use the marketplace as either an enterprise seller who wants to sell their agentic AI solutions, or - a customer who wants to adopt the seller’s agent. 
@@ -37,3 +46,8 @@ CONTEXT: Individual Problem Set 1 for MGMT 6110 Human-AI Collaboration at SMU.
  Built in Google AI Studio, shared as a link, and opened on a phone by classmates
  in Week 3. I am not a programmer: when you make a choice I did not specify, say
  so in one line rather than burying it.
+```
+
+**What came back:** A running app, 8 files, preview loaded. 
+It also added an annual -15% discount in the marketplace which I never asked for
+
