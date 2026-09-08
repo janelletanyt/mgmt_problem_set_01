@@ -1,0 +1,6 @@
+{
+  "name": "GEEK AI - Agentic AI Marketplace",
+  "description": "Mobile marketplace for enterprise agentic AI solutions, connecting sellers and buyers with an interactive chatbot guide and industry explorer.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
