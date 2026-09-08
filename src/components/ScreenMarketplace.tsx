@@ -38,13 +38,9 @@ export const ScreenMarketplace: React.FC<ScreenMarketplaceProps> = ({
   onAddListing,
   selectedIndustryFilter,
 }) => {
-  // Remembered Toggle from localStorage
-  const [viewMode, setViewMode] = useState<'detailed' | 'compact'>(() => {
-    return (localStorage.getItem('geek_ai_view_mode') as 'detailed' | 'compact') || 'detailed';
-  });
-
-  const [pricingCycle, setPricingCycle] = useState<'standard' | 'annualized'>(() => {
-    return (localStorage.getItem('geek_ai_pricing_cycle') as 'standard' | 'annualized') || 'standard';
+  // Remembered Toggle for Verified Certifications filter
+  const [verifiedOnly, setVerifiedOnly] = useState<boolean>(() => {
+    return localStorage.getItem('geek_ai_verified_only') === 'true';
   });
 
   // Filter and Sort states
@@ -74,14 +70,10 @@ export const ScreenMarketplace: React.FC<ScreenMarketplaceProps> = ({
   const [formDescription, setFormDescription] = useState('');
   const [formSuccessMessage, setFormSuccessMessage] = useState('');
 
-  // Save remembered toggles to localStorage
+  // Save remembered toggle to localStorage
   useEffect(() => {
-    localStorage.setItem('geek_ai_view_mode', viewMode);
-  }, [viewMode]);
-
-  useEffect(() => {
-    localStorage.setItem('geek_ai_pricing_cycle', pricingCycle);
-  }, [pricingCycle]);
+    localStorage.setItem('geek_ai_verified_only', String(verifiedOnly));
+  }, [verifiedOnly]);
 
   // Handle Add Listing submit
   const handleAddSubmit = (e: React.FormEvent) => {
@@ -133,6 +125,8 @@ export const ScreenMarketplace: React.FC<ScreenMarketplaceProps> = ({
     if (selectedType !== 'All' && item.type !== selectedType) return false;
     // Pricing filter
     if (selectedPricing !== 'All' && item.pricingModel !== selectedPricing) return false;
+    // Verified Only toggle filter
+    if (verifiedOnly && item.certifications.length === 0) return false;
     // Industry filter (if passed from assessment or search)
     if (selectedIndustryFilter && selectedIndustryFilter !== 'All Industries') {
       if (!item.industry.toLowerCase().includes(selectedIndustryFilter.toLowerCase())) {
@@ -207,7 +201,7 @@ export const ScreenMarketplace: React.FC<ScreenMarketplaceProps> = ({
           )}
         </div>
 
-        {/* Filter Badges & Remembered Toggle Bar */}
+        {/* Filter Badges & Remembered Verified Toggle */}
         <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
           {/* Solution Type Filter */}
           <div className="flex items-center gap-1 overflow-x-auto pb-1 max-w-full text-xs">
@@ -226,66 +220,23 @@ export const ScreenMarketplace: React.FC<ScreenMarketplaceProps> = ({
             ))}
           </div>
 
-          {/* Remembered Toggle: Detailed vs Compact View */}
-          <div className="flex items-center gap-2 text-xs">
-            <div className="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5">
-              <button
-                id="toggle-view-detailed"
-                onClick={() => setViewMode('detailed')}
-                className={`px-2 py-1 rounded-md text-[11px] font-medium transition ${
-                  viewMode === 'detailed'
-                    ? 'bg-emerald-500 text-slate-950 font-bold'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-                title="Detailed Cards (Saved in storage)"
-              >
-                Detailed
-              </button>
-              <button
-                id="toggle-view-compact"
-                onClick={() => setViewMode('compact')}
-                className={`px-2 py-1 rounded-md text-[11px] font-medium transition ${
-                  viewMode === 'compact'
-                    ? 'bg-emerald-500 text-slate-950 font-bold'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-                title="Compact Cards (Saved in storage)"
-              >
-                Compact
-              </button>
-            </div>
-
-            {/* Remembered Toggle: Annualized Billing (-15%) vs Standard */}
-            <div className="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5">
-              <button
-                id="toggle-billing-standard"
-                onClick={() => setPricingCycle('standard')}
-                className={`px-2 py-1 rounded-md text-[11px] font-medium transition ${
-                  pricingCycle === 'standard'
-                    ? 'bg-blue-500 text-white font-semibold'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-                title="Standard Monthly Price"
-              >
-                Monthly
-              </button>
-              <button
-                id="toggle-billing-annual"
-                onClick={() => setPricingCycle('annualized')}
-                className={`px-2 py-1 rounded-md text-[11px] font-medium transition ${
-                  pricingCycle === 'annualized'
-                    ? 'bg-blue-500 text-white font-semibold'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-                title="Annualized Billing (-15%)"
-              >
-                Annual (-15%)
-              </button>
-            </div>
-          </div>
+          {/* Remembered Toggle: Verified Certifications Only */}
+          <button
+            id="toggle-verified-only"
+            onClick={() => setVerifiedOnly((prev) => !prev)}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border transition ${
+              verifiedOnly
+                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm'
+                : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-slate-200'
+            }`}
+            title="Filter by certified agents (stored in localStorage)"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span>{verifiedOnly ? 'Certified Only: ON' : 'Certified Only: OFF'}</span>
+          </button>
         </div>
 
-        {/* Pricing Filter & Sorter */}
+        {/* Pricing Model Filter & Sorter */}
         <div className="flex items-center justify-between text-xs text-slate-400 pt-0.5">
           <div className="flex items-center gap-1.5">
             <span>Model:</span>
@@ -339,16 +290,6 @@ export const ScreenMarketplace: React.FC<ScreenMarketplaceProps> = ({
           </div>
         ) : (
           filteredListings.map((agent) => {
-            // Price calculation if annualized toggle is active
-            let displayPrice = agent.pricingAmount;
-            let displayPeriod = agent.billingPeriod || '';
-            if (pricingCycle === 'annualized' && agent.pricingModel === 'subscription') {
-              const numeric = parseInt(agent.pricingAmount.replace(/[^0-9]/g, '')) || 0;
-              const discounted = Math.round(numeric * 0.85);
-              displayPrice = `$${discounted.toLocaleString()}`;
-              displayPeriod = '/ mo (billed annually)';
-            }
-
             return (
               <div
                 key={agent.id}
@@ -445,30 +386,30 @@ export const ScreenMarketplace: React.FC<ScreenMarketplaceProps> = ({
                   </div>
                 </div>
 
-                {/* If Detailed View Mode is on: show problem solved & description */}
-                {viewMode === 'detailed' && (
-                  <div className="space-y-2 pt-1 text-xs border-t border-slate-700/60">
-                    <p className="text-slate-300 leading-relaxed">{agent.description}</p>
-                    <div className="bg-slate-900/50 p-2 rounded-lg border border-slate-800 text-[11px] text-emerald-300">
-                      <strong>Problem Solved:</strong> {agent.problemSolved}
-                    </div>
+                {/* Detailed Mode: Always display description & problem solved */}
+                <div className="space-y-2 pt-1 text-xs border-t border-slate-700/60">
+                  <p className="text-slate-300 leading-relaxed">{agent.description}</p>
+                  <div className="bg-slate-900/50 p-2.5 rounded-lg border border-slate-800 text-[11px] text-emerald-300">
+                    <strong className="text-emerald-400">Problem Solved:</strong> {agent.problemSolved}
                   </div>
-                )}
+                </div>
 
-                {/* Pricing Banner */}
+                {/* Pricing Banner: 1 Fixed Fee only */}
                 <div className="flex items-center justify-between pt-2 border-t border-slate-700/60">
                   <div>
                     <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold block">
-                      Pricing Model ({agent.pricingModel === 'subscription' ? 'Subscription' : 'One-Time Fee'}):
+                      Fixed Fee ({agent.pricingModel === 'subscription' ? 'Monthly' : 'One-Time License'}):
                     </span>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-lg font-extrabold text-white">{displayPrice}</span>
-                      <span className="text-xs text-slate-400">{displayPeriod}</span>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-lg font-extrabold text-white">{agent.pricingAmount}</span>
+                      <span className="text-xs text-slate-400">
+                        {agent.pricingModel === 'subscription' ? '/ month (Fixed)' : '(1 Fixed Fee)'}
+                      </span>
                     </div>
                   </div>
 
-                  <span className="text-[10px] px-2 py-1 rounded bg-slate-700 text-slate-300">
-                    SLA & Onboarding Included
+                  <span className="text-[10px] px-2 py-1 rounded bg-slate-750 border border-slate-700 text-slate-300">
+                    SLA & Setup Included
                   </span>
                 </div>
 

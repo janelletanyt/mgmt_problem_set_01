@@ -230,7 +230,6 @@ export const ScreenChatbot: React.FC<ScreenChatbotProps> = ({
               <span className="font-semibold text-sm text-white">AI Onboarding Concierge</span>
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             </div>
-            <p className="text-xs text-slate-400">Step 1 of 3 • Intent & Needs Profiling</p>
           </div>
         </div>
 

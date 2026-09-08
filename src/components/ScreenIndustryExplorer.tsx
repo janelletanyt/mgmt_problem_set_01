@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Search, 
   Layers, 
@@ -16,7 +16,13 @@ import {
   AlertCircle,
   Lightbulb,
   Building,
-  RotateCcw
+  RotateCcw,
+  ChevronDown,
+  ChevronUp,
+  Filter,
+  MoveHorizontal,
+  X,
+  GripHorizontal
 } from 'lucide-react';
 import { AgentListing, ScreenType } from '../types';
 import { INDUSTRIES_LIST, ROLES_LIST } from '../data/marketplaceData';
@@ -43,6 +49,47 @@ export const ScreenIndustryExplorer: React.FC<ScreenIndustryExplorerProps> = ({
   const [selectedRole, setSelectedRole] = useState<string>(
     userRole && ROLES_LIST.includes(userRole) ? userRole : 'All Roles'
   );
+
+  // Swipeable state for dropdown menu (Screen 3)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(true);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const [swipeOffset, setSwipeOffset] = useState<number>(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+
+  // Touch handlers for swipe away
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
+    setIsSwiping(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+    const deltaY = e.touches[0].clientY - touchStartRef.current.y;
+    const deltaX = e.touches[0].clientX - touchStartRef.current.x;
+    // Provide slight visual feedback when swiping up or sideways
+    if (deltaY < 0) {
+      setSwipeOffset(deltaY);
+    } else if (Math.abs(deltaX) > 10) {
+      setSwipeOffset(Math.sign(deltaX) * Math.min(Math.abs(deltaX), 60));
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+    const deltaY = e.changedTouches[0].clientY - touchStartRef.current.y;
+    const deltaX = e.changedTouches[0].clientX - touchStartRef.current.x;
+
+    // Swiping away: swipe up by 30px OR swipe sideways by 45px dismisses dropdown
+    if (deltaY < -30 || Math.abs(deltaX) > 45) {
+      setIsDropdownOpen(false);
+    }
+    touchStartRef.current = null;
+    setSwipeOffset(0);
+    setIsSwiping(false);
+  };
 
   // Active tab inside explorer
   const [activeTab, setActiveTab] = useState<'solutions' | 'advisor'>('solutions');
@@ -174,46 +221,114 @@ export const ScreenIndustryExplorer: React.FC<ScreenIndustryExplorerProps> = ({
               )}
             </div>
 
-            {/* Industry and Role Sort Dropdowns */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-              <div className="space-y-1">
-                <label className="text-[11px] text-slate-400 font-medium flex items-center gap-1">
-                  <Building className="w-3 h-3 text-emerald-400" />
-                  <span>Sort / Filter by Industry:</span>
-                </label>
-                <select
-                  id="select-explorer-industry"
-                  value={selectedIndustry}
-                  onChange={(e) => setSelectedIndustry(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 text-slate-200 rounded-xl px-2.5 py-2 text-xs focus:outline-none focus:border-emerald-500"
-                >
-                  {INDUSTRIES_LIST.map((ind) => (
-                    <option key={ind} value={ind}>
-                      {ind}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            {/* Swipeable Industry and Role Dropdown Menu */}
+            {!isDropdownOpen ? (
+              /* Swiped Away / Collapsed Bar - does not block full page view */
+              <div
+                id="banner-collapsed-dropdown"
+                onClick={() => setIsDropdownOpen(true)}
+                className="bg-slate-800/90 border border-slate-700/80 rounded-xl px-3 py-2 flex items-center justify-between text-xs cursor-pointer hover:border-slate-600 transition shadow-sm select-none"
+                title="Click or tap to reopen dropdown filter menu"
+              >
+                <div className="flex items-center gap-2 overflow-hidden text-slate-300">
+                  <div className="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                    <Filter className="w-3.5 h-3.5" />
+                  </div>
+                  <div className="truncate">
+                    <span className="text-[10px] text-slate-400 block">Dropdowns Swiped Away • Tap to View:</span>
+                    <span className="font-semibold text-white text-xs truncate block">
+                      {selectedIndustry === 'All Industries' ? 'All Industries' : selectedIndustry} • {selectedRole === 'All Roles' ? 'All Roles' : selectedRole}
+                    </span>
+                  </div>
+                </div>
 
-              <div className="space-y-1">
-                <label className="text-[11px] text-slate-400 font-medium flex items-center gap-1">
-                  <UserCheck className="w-3 h-3 text-blue-400" />
-                  <span>Sort / Filter by Role:</span>
-                </label>
-                <select
-                  id="select-explorer-role"
-                  value={selectedRole}
-                  onChange={(e) => setSelectedRole(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 text-slate-200 rounded-xl px-2.5 py-2 text-xs focus:outline-none focus:border-emerald-500"
+                <button
+                  type="button"
+                  id="btn-expand-dropdown-menu"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsDropdownOpen(true);
+                  }}
+                  className="flex items-center gap-1 text-[11px] text-emerald-400 font-bold bg-emerald-500/10 hover:bg-emerald-500/20 px-2.5 py-1 rounded-lg border border-emerald-500/30 transition shrink-0 ml-2"
                 >
-                  {ROLES_LIST.map((r) => (
-                    <option key={r} value={r}>
-                      {r}
-                    </option>
-                  ))}
-                </select>
+                  <span>Expand</span>
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </button>
               </div>
-            </div>
+            ) : (
+              /* Active Swipeable Dropdown Container */
+              <div
+                id="swipeable-dropdown-menu"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                style={{
+                  transform: swipeOffset !== 0 ? `translate(${swipeOffset}px, ${swipeOffset < 0 ? swipeOffset : 0}px)` : undefined,
+                  transition: isSwiping ? 'none' : 'transform 0.2s ease-out',
+                }}
+                className="bg-slate-800/95 border border-slate-700 rounded-2xl p-3 space-y-2.5 shadow-xl relative select-none"
+              >
+                {/* Swipe Handle Bar & Dismiss Control */}
+                <div className="flex items-center justify-between pb-1 border-b border-slate-700/60">
+                  <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
+                    <GripHorizontal className="w-4 h-4 text-emerald-400" />
+                    <span>Swipe up/sideways to dismiss menu</span>
+                  </div>
+
+                  <button
+                    id="btn-swipe-away-dropdown"
+                    type="button"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="text-[11px] text-slate-300 hover:text-white px-2 py-0.5 rounded-md bg-slate-700 hover:bg-slate-650 flex items-center gap-1 transition"
+                    title="Swipe away or collapse dropdown menu"
+                  >
+                    <span>Swipe away</span>
+                    <ChevronUp className="w-3.5 h-3.5 text-emerald-400" />
+                  </button>
+                </div>
+
+                {/* Industry and Role Sort Dropdowns */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <div className="space-y-1">
+                    <label className="text-[11px] text-slate-400 font-medium flex items-center gap-1">
+                      <Building className="w-3 h-3 text-emerald-400" />
+                      <span>Sort / Filter by Industry:</span>
+                    </label>
+                    <select
+                      id="select-explorer-industry"
+                      value={selectedIndustry}
+                      onChange={(e) => setSelectedIndustry(e.target.value)}
+                      className="w-full bg-slate-850 border border-slate-700 text-slate-200 rounded-xl px-2.5 py-2 text-xs focus:outline-none focus:border-emerald-500"
+                    >
+                      {INDUSTRIES_LIST.map((ind) => (
+                        <option key={ind} value={ind}>
+                          {ind}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] text-slate-400 font-medium flex items-center gap-1">
+                      <UserCheck className="w-3 h-3 text-blue-400" />
+                      <span>Sort / Filter by Role:</span>
+                    </label>
+                    <select
+                      id="select-explorer-role"
+                      value={selectedRole}
+                      onChange={(e) => setSelectedRole(e.target.value)}
+                      className="w-full bg-slate-850 border border-slate-700 text-slate-200 rounded-xl px-2.5 py-2 text-xs focus:outline-none focus:border-emerald-500"
+                    >
+                      {ROLES_LIST.map((r) => (
+                        <option key={r} value={r}>
+                          {r}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Remembered Toggle: Highlight ROI Metric vs Highlight Workflow */}
             <div className="flex items-center justify-between pt-1 border-t border-slate-750 text-xs">

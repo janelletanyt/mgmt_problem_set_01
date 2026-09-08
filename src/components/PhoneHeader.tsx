@@ -1,19 +1,15 @@
 import React from 'react';
-import { Bot, Store, Compass, Sparkles, Smartphone, Monitor } from 'lucide-react';
+import { Bot, Store, Compass } from 'lucide-react';
 import { ScreenType } from '../types';
 
 interface PhoneHeaderProps {
   currentScreen: ScreenType;
   onNavigate: (screen: ScreenType) => void;
-  isDesktopFrame: boolean;
-  onToggleFrame: () => void;
 }
 
 export const PhoneHeader: React.FC<PhoneHeaderProps> = ({
   currentScreen,
   onNavigate,
-  isDesktopFrame,
-  onToggleFrame,
 }) => {
   return (
     <header className="bg-slate-900 border-b border-slate-800 px-4 py-2.5 flex items-center justify-between shrink-0 select-none">
@@ -33,19 +29,9 @@ export const PhoneHeader: React.FC<PhoneHeaderProps> = ({
       </div>
 
       <div className="flex items-center gap-1.5">
-        {/* Toggle between Phone Frame & Fullscreen on desktop */}
-        <button
-          onClick={onToggleFrame}
-          title={isDesktopFrame ? 'Expand to Full Screen' : 'View in Phone Frame'}
-          className="hidden sm:flex items-center gap-1 text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded-lg border border-slate-700 transition"
-        >
-          {isDesktopFrame ? <Monitor className="w-3.5 h-3.5" /> : <Smartphone className="w-3.5 h-3.5" />}
-          <span>{isDesktopFrame ? 'Full Width' : 'Phone View'}</span>
-        </button>
-
-        <div className="flex items-center gap-1 bg-slate-800/80 p-0.5 rounded-lg border border-slate-750">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ml-1"></span>
-          <span className="text-[10px] text-slate-300 font-medium pr-1.5">Week 3</span>
+        <div className="flex items-center gap-1 bg-slate-800/80 px-2 py-1 rounded-lg border border-slate-750">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span className="text-[10px] text-slate-300 font-medium">Week 3</span>
         </div>
       </div>
     </header>

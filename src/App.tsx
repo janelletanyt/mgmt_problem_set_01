@@ -30,9 +30,6 @@ export default function App() {
     desiredOutcome: '',
   });
 
-  // Desktop phone frame mode toggle
-  const [isDesktopFrame, setIsDesktopFrame] = useState(true);
-
   // Add new agent listing handler (Seller form)
   const handleAddListing = (newListing: AgentListing) => {
     setListings((prev) => [newListing, ...prev]);
@@ -44,37 +41,27 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center sm:p-4 selection:bg-emerald-500 selection:text-slate-950 font-sans">
-      {/* Phone container: Full screen on mobile, phone frame on desktop */}
-      <div
-        className={`w-full h-screen sm:h-[92vh] flex flex-col bg-slate-900 overflow-hidden shadow-2xl transition-all duration-300 ${
-          isDesktopFrame
-            ? 'sm:max-w-[430px] sm:rounded-[44px] sm:border-[8px] sm:border-slate-800 sm:ring-1 sm:ring-slate-700/60 relative'
-            : 'max-w-4xl sm:rounded-2xl sm:border border-slate-800'
-        }`}
-      >
-        {/* Phone Speaker & Dynamic Notch (Visible on desktop frame) */}
-        {isDesktopFrame && (
-          <div className="hidden sm:flex items-center justify-between px-7 pt-3 pb-1 text-[12px] text-slate-400 select-none bg-slate-900 shrink-0">
-            <span className="font-semibold text-slate-300">09:41</span>
-            {/* Camera Pill */}
-            <div className="w-20 h-4 bg-slate-950 rounded-full flex items-center justify-center gap-1.5 border border-slate-800">
-              <div className="w-2 h-2 rounded-full bg-slate-800"></div>
-              <div className="w-1.5 h-1.5 rounded-full bg-indigo-950"></div>
-            </div>
-            <div className="flex items-center gap-1.5 text-slate-300">
-              <Signal className="w-3 h-3" />
-              <Wifi className="w-3 h-3" />
-              <Battery className="w-3.5 h-3.5" />
-            </div>
+      {/* Phone container: strictly phone view at all times */}
+      <div className="w-full h-screen sm:h-[92vh] sm:max-w-[430px] flex flex-col bg-slate-900 overflow-hidden shadow-2xl sm:rounded-[44px] sm:border-[8px] sm:border-slate-800 sm:ring-1 sm:ring-slate-700/60 relative">
+        {/* Phone Speaker & Dynamic Notch (Phone aesthetic) */}
+        <div className="hidden sm:flex items-center justify-between px-7 pt-3 pb-1 text-[12px] text-slate-400 select-none bg-slate-900 shrink-0">
+          <span className="font-semibold text-slate-300">09:41</span>
+          {/* Camera Pill */}
+          <div className="w-20 h-4 bg-slate-950 rounded-full flex items-center justify-center gap-1.5 border border-slate-800">
+            <div className="w-2 h-2 rounded-full bg-slate-800"></div>
+            <div className="w-1.5 h-1.5 rounded-full bg-indigo-950"></div>
           </div>
-        )}
+          <div className="flex items-center gap-1.5 text-slate-300">
+            <Signal className="w-3 h-3" />
+            <Wifi className="w-3 h-3" />
+            <Battery className="w-3.5 h-3.5" />
+          </div>
+        </div>
 
         {/* Global Phone Header */}
         <PhoneHeader
           currentScreen={currentScreen}
           onNavigate={setCurrentScreen}
-          isDesktopFrame={isDesktopFrame}
-          onToggleFrame={() => setIsDesktopFrame((prev) => !prev)}
         />
 
         {/* Screen View Area (Without reloading page) */}
