@@ -1,7 +1,7 @@
 # PROMPTS.md - [GEEK AI]
-**Student:** [Janelle Tan] **Course:** MGMT 6110 **Problem Set 1**
-**User sentence** An enterprise seller or buyer opens this screen to list his agentic AI solution, and knows it worked when the AI concierge leads him to the marketplace. 
-**Live link** mgmt-problem-set-01.vercel.app
+- **Student:** [Janelle Tan] **Course:** MGMT 6110 **Problem Set 1**
+- **User sentence** An enterprise seller or buyer opens this screen to list his agentic AI solution, and knows it worked when the AI concierge leads him to the marketplace. 
+- **Live link** mgmt-problem-set-01.vercel.app
 
 --
 
@@ -50,4 +50,19 @@ CONTEXT: Individual Problem Set 1 for MGMT 6110 Human-AI Collaboration at SMU.
 
 **What came back:** A running app, 8 files, preview loaded. 
 It also added an annual -15% discount in the marketplace which I never asked for
+
+## Prompt 2 - removing items I did not ask for
+```
+Some information that I did not ask for: 
+In screen 1. Chatbot Guide
+- Remove desktop toggle. The app is only meant for phone view 
+- Remove Step 1 of 3. Intent & Needs profiling
+
+In screen 2. Marketplace
+- Remove monthly/annual toggle. I only want 1 fixed fee. 
+- Remove detailed/compact toggle. I only want the detailed mode
+
+In screen 3. Explore
+- Make the dropdown menu swipeable. If the user does not intend to use it, they should be able to swipe away the dropdown menu so that it does not block the entire page view.
+```
 
