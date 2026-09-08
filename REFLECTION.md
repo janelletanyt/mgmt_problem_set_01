@@ -1,4 +1,5 @@
 # REFLECTIONS.md
+**Student:** Janelle Tan . **Course:** MGMT 6110 . **Problem Set 1**
 
 ## Q1: Who are your users, and what changes for them? 
 ```
