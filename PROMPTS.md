@@ -66,3 +66,4 @@ In screen 3. Explore
 - Make the dropdown menu swipeable. If the user does not intend to use it, they should be able to swipe away the dropdown menu so that it does not block the entire page view.
 ```
 
+**What came back** Edited files removed the annual discount that I did not asked for.
